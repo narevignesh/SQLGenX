@@ -1,0 +1,47 @@
+# ==============================================================================
+# SQLGenX: System Requirements & Runtime Prerequisites
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Core Runtime Environment
+# ------------------------------------------------------------------------------
+# Node.js: v18.0.0 or higher (v20+ LTS / v22+ LTS recommended)
+# Package Manager: npm (v9.0.0+) or yarn or pnpm
+# Operating System: Cross-platform (Windows 10/11, macOS, Linux, Ubuntu 20.04+)
+
+# ------------------------------------------------------------------------------
+# 2. Node.js Production Dependencies (Installed via `npm install`)
+# ------------------------------------------------------------------------------
+express>=5.0.0
+cors>=2.8.5
+mysql2>=3.12.0
+
+# ------------------------------------------------------------------------------
+# 3. Database Support Requirements
+# ------------------------------------------------------------------------------
+# A. In-Browser SQLite WebAssembly (Zero Setup Required)
+#    - Powered by sql.js WASM v1.12.0 (Loaded automatically via CDN)
+#    - Runs 100% client-side inside browser memory
+#    - 1,900+ seeded records across 6 enterprise retail tables
+#
+# B. Live MySQL Server (Optional for Realtime Database Mode)
+#    - MySQL Server: v5.7, v8.0, or v8.4 LTS (or MariaDB >= 10.4)
+#    - Default Port: 3306
+#    - User privileges: Read-only SELECT access (SELECT, SHOW VIEW)
+
+# ------------------------------------------------------------------------------
+# 4. Client Browser Requirements
+# ------------------------------------------------------------------------------
+# Modern Web Browser with ES6 Module and WebAssembly support:
+# - Google Chrome / Chromium >= 89
+# - Mozilla Firefox >= 88
+# - Microsoft Edge >= 89
+# - Apple Safari >= 15.0
+
+# ------------------------------------------------------------------------------
+# 5. Supported AI Inference Providers (Configured via In-App Settings)
+# ------------------------------------------------------------------------------
+# - Groq Cloud (Recommended: LLaMA 3.3 70B, openai/gpt-oss-120b)
+# - Google Gemini API (gemini-1.5-flash)
+# - OpenAI API (gpt-4o, gpt-4o-mini)
+# - Offline Semantic Engine (Built-in fallback, requires zero API keys)

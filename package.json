@@ -1,0 +1,26 @@
+{
+  "name": "sqlgenx",
+  "version": "2.0.0",
+  "description": "SQLGenX - AI SQL Generation & Query Intelligence Platform (Pure JavaScript, MySQL & Sample DB)",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "sql",
+    "agentic-ai",
+    "mysql",
+    "langchain",
+    "sqlite-wasm",
+    "groq"
+  ],
+  "author": "narevignesh",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.3.0",
+    "mysql2": "^3.12.0"
+  }
+}

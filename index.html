@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SQLGenX | Enterprise AI-Powered SQL Analytics & Schema Intelligence</title>
+  <meta name="description" content="Clean, modern AI SQL analytics dashboard with dual realtime MySQL & SQLite WASM sandbox, interactive ER visualizer, LangChain AI, and automated Chart.js visualizations.">
+
+  <!-- Google Fonts: Outfit (Display), Plus Jakarta Sans (Body), JetBrains Mono (Code) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5.3.3 CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons 1.11.3 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom Application Stylesheet -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- sql.js WebAssembly (In-browser SQLite WASM) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.12.0/sql-wasm.js"></script>
+  <!-- Chart.js 4.4.2 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+  <!-- Bootstrap 5.3.3 JS Bundle -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+  <!-- SQLGenX Application Controller (ES Module) -->
+  <script type="module" src="js/app.js"></script>
+</head>
+<body>
+
+  <!-- ============================================================== -->
+  <!-- 1. COMPACT TOP NAVIGATION BAR -->
+  <!-- ============================================================== -->
+  <header class="top-navbar d-flex align-items-center justify-content-between px-3">
+    <!-- Left: Brand Logo & Mobile Sidebar Toggle -->
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-icon-round d-lg-none me-1" id="btn-sidebar-toggle" title="Toggle Navigation Menu">
+        <i class="bi bi-list fs-5"></i>
+      </button>
+      <a class="brand-title text-decoration-none" href="#">
+        <i class="bi bi-cpu-fill me-2"></i> SQLGenX
+      </a>
+      <span class="brand-badge d-none d-sm-inline-block">AI AGENTIC</span>
+    </div>
+
+    <!-- Center: Active Database Selector Dropdown -->
+    <div class="dropdown mx-auto">
+      <button class="db-selector-pill dropdown-toggle border-0" type="button" id="dbSelectorDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="bi bi-database text-cyan"></i>
+        <span id="db-selector-title">Sample Enterprise DB (1,900+ rows)</span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-dark border-secondary shadow-lg" aria-labelledby="dbSelectorDropdown">
+        <li>
+          <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#" id="btn-use-sample-db">
+            <i class="bi bi-box-fill text-cyan"></i>
+            <div>
+              <div class="fw-semibold text-white">Sample Enterprise DB</div>
+              <div class="text-xs text-muted">In-browser SQLite WASM (1,900+ rows)</div>
+            </div>
+          </a>
+        </li>
+        <li><hr class="dropdown-divider border-secondary my-1"></li>
+        <li>
+          <a class="dropdown-item d-flex align-items-center gap-2 py-2" href="#" data-bs-toggle="modal" data-bs-target="#mysqlConnectModal">
+            <i class="bi bi-hdd-network-fill text-success-green"></i>
+            <div>
+              <div class="fw-semibold text-white">Connect Realtime MySQL...</div>
+              <div class="text-xs text-muted">Connect live MySQL database server</div>
+            </div>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <!-- Right: Connection Status Badge & Utility Controls -->
+    <div class="d-flex align-items-center gap-2">
+      <!-- Database Connection Status Badge (Clean, non-duplicated) -->
+      <div id="top-status-badge" class="status-badge-pill" data-bs-toggle="modal" data-bs-target="#mysqlConnectModal" style="cursor: pointer;" title="Configure Database Connection">
+        <span id="db-status-dot" class="pulse-indicator bg-cyan-400"></span>
+        <span id="db-status-text">Ready</span>
+      </div>
+
+      <!-- Theme Mode Toggle -->
+      <button class="btn btn-icon-round" id="btn-theme-toggle" title="Toggle Theme (Dark Active)">
+        <i class="bi bi-sun"></i>
+      </button>
+
+      <!-- Settings Cog Button -->
+      <button class="btn btn-icon-round" data-bs-toggle="modal" data-bs-target="#settingsModal" title="AI Provider & Model Settings">
+        <i class="bi bi-gear-fill"></i>
+      </button>
+
+      <!-- User Avatar Profile -->
+      <div class="user-avatar-badge" title="Active Analyst Session">V</div>
+    </div>
+  </header>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-backdrop d-lg-none" id="sidebar-backdrop"></div>
+
+  <!-- ============================================================== -->
+  <!-- 2. DESKTOP APPLICATION LAYOUT (SIDEBAR + MAIN CONTENT) -->
+  <!-- ============================================================== -->
+  <div class="app-layout">
+
+    <!-- ============================================================ -->
+    <!-- LEFT NAVIGATION SIDEBAR (5 ESSENTIAL ITEMS ONLY) -->
+    <!-- ============================================================ -->
+    <aside class="left-sidebar">
+      <nav class="sidebar-nav">
+        <!-- 1. AI Query Copilot -->
+        <button class="sidebar-item active" id="nav-btn-copilot" data-tab="tab-query">
+          <i class="bi bi-stars"></i>
+          <span>AI Query Copilot</span>
+        </button>
+
+        <!-- 2. Schema & ER Visualizer -->
+        <button class="sidebar-item" id="nav-btn-schema" data-tab="tab-schema">
+          <i class="bi bi-diagram-3-fill"></i>
+          <span>Schema & ER Visualizer</span>
+        </button>
+
+        <!-- 3. Query History -->
+        <button class="sidebar-item" id="nav-btn-history" data-tab="tab-history">
+          <i class="bi bi-clock-history"></i>
+          <span>Query History</span>
+        </button>
+
+        <!-- 4. Spider Benchmark -->
+        <button class="sidebar-item" id="nav-btn-benchmark" data-tab="tab-benchmark">
+          <i class="bi bi-award"></i>
+          <span>Spider Benchmark</span>
+        </button>
+      </nav>
+
+      <!-- Bottom Sidebar Card: Connected Database Status -->
+      <div class="sidebar-db-card mt-auto">
+        <div class="d-flex align-items-center gap-2 mb-2">
+          <i class="bi bi-database text-cyan fs-4"></i>
+          <div class="overflow-hidden">
+            <div class="text-xs text-muted font-bold text-uppercase">Connected Database</div>
+            <div id="sidebar-db-title" class="text-xs text-white fw-bold text-truncate">Sample Enterprise DB</div>
+            <div id="sidebar-db-subtitle" class="text-xs text-muted">1,900+ rows</div>
+          </div>
+        </div>
+        <button id="sidebar-connect-btn" class="status-badge-pill w-100 justify-content-center border-0" data-bs-toggle="modal" data-bs-target="#mysqlConnectModal">
+          <span class="status-dot"></span>
+          <span id="sidebar-status-label">Ready</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT VIEW AREA -->
+    <!-- ============================================================ -->
+    <main class="main-content">
+      <div class="tab-content" id="mainTabContent">
+
+        <!-- ======================================================== -->
+        <!-- TAB 1: AI QUERY COPILOT STUDIO (PRIMARY DASHBOARD) -->
+        <!-- ======================================================== -->
+        <div class="tab-pane fade show active" id="tab-query" role="tabpanel">
+
+          <!-- Section Header (Clean, no decorative feature badges) -->
+          <div class="mb-3">
+            <h1 class="copilot-header-title mb-1">
+              <i class="bi bi-stars text-cyan me-1"></i> AI Query <span class="text-cyan">Copilot</span>
+            </h1>
+            <p class="copilot-header-subtitle mb-0">Ask questions about your data in plain English. Get accurate SQL queries and visualizations instantly.</p>
+          </div>
+
+          <!-- Natural Language Query Input Bar -->
+          <div class="query-box-container mb-3">
+            <i class="bi bi-chat-left-dots text-cyan fs-5 ps-1"></i>
+            <input type="text" id="nl-query-input" class="query-input-field" 
+              placeholder="Ask a question in plain English (e.g. 'Show the top 5 customers by total spending')...">
+            <button id="btn-run-query" class="btn btn-generate-glow d-flex align-items-center gap-2">
+              <i class="bi bi-stars"></i> Generate & Run <i class="bi bi-play-fill"></i>
+            </button>
+          </div>
+
+          <!-- Sample Prompts Row (Compact & clean spacing) -->
+          <div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+            <span class="sample-prompts-label me-1">
+              <i class="bi bi-lightbulb text-warning me-1"></i> Sample Prompts:
+            </span>
+            <div id="sample-chips-container" class="d-flex flex-wrap align-items-center gap-2">
+              <!-- Dynamically populated chips -->
+            </div>
+          </div>
+
+          <!-- Live Agent Execution Pipeline Status Bar (Compact, understated) -->
+          <div class="agent-status-bar mb-3 py-2 px-3 d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div id="agent-live-status" class="text-xs text-secondary font-mono d-flex align-items-center">
+              <span class="status-indicator-dot me-2"></span>
+              <span id="agent-status-msg">Ready. Enter a query or select a sample prompt.</span>
+            </div>
+            
+            <div class="d-flex flex-wrap align-items-center gap-1" id="agent-steps-container">
+              <span id="step-pill-schema" class="agent-pill pending">1. Schema</span>
+              <span id="step-pill-generation" class="agent-pill pending">2. AI SQL</span>
+              <span id="step-pill-validation" class="agent-pill pending">3. Guardrail</span>
+              <span id="step-pill-execution" class="agent-pill pending">4. Execute</span>
+              <span id="step-pill-analysis" class="agent-pill pending">5. Analyst</span>
+            </div>
+
+            <div id="query-metrics-pill" class="d-flex align-items-center gap-2"></div>
+          </div>
+
+          <!-- ====================================================== -->
+          <!-- 2-COLUMN WORKSPACE: SQL EDITOR & DATA VISUALIZATION -->
+          <!-- ====================================================== -->
+          <div class="row g-3 mb-3">
+
+            <!-- ---------------------------------------------------- -->
+            <!-- LEFT COLUMN: GENERATED SQL QUERY PANEL -->
+            <!-- ---------------------------------------------------- -->
+            <div class="col-lg-6">
+              <div class="dashboard-card">
+                <!-- Header -->
+                <div class="dashboard-card-header">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="dashboard-card-title">
+                      <i class="bi bi-database text-cyan"></i> Generated SQL Query
+                    </span>
+                    <span id="risk-badge" class="badge bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+                      <i class="bi bi-shield-check me-1"></i> LOW RISK (0.10)
+                    </span>
+                  </div>
+                  <div class="d-flex align-items-center gap-2">
+                    <button id="btn-run-sql" class="btn btn-run-blue" title="Execute manually on database">
+                      <i class="bi bi-play-fill me-1"></i> Run SQL
+                    </button>
+                    <button id="btn-copy-sql" class="btn btn-editor-action" title="Copy SQL to Clipboard">
+                      <i class="bi bi-clipboard"></i>
+                    </button>
+                    <button id="btn-download-sql" class="btn btn-editor-action" title="Download SQL file">
+                      <i class="bi bi-download"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Body -->
+                <div class="dashboard-card-body d-flex flex-column">
+                  <!-- Editor Container with Line Numbers -->
+                  <div class="sql-editor-wrapper mb-2">
+                    <div class="sql-line-numbers" id="sql-line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9</div>
+                    <textarea id="sql-editor-input" class="sql-editor-textarea" spellcheck="false" 
+                      placeholder="-- Generated SQL query will appear here..."></textarea>
+                  </div>
+
+                  <!-- Safety Description -->
+                  <div id="risk-explanation" class="text-xs text-muted mb-2 font-mono">
+                    Strict read-only safety active. Destructive statements (DROP, DELETE, UPDATE) are blocked.
+                  </div>
+
+                  <!-- Collapsible Reasoning & Findings Accordion -->
+                  <div class="accordion accordion-flush mt-auto" id="reasoningAccordion">
+                    <div class="accordion-item bg-transparent border-0">
+                      <h2 class="accordion-header">
+                        <button class="accordion-button collapsed py-1 px-0 bg-transparent text-xs text-cyan font-outfit shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#reasoningCollapse">
+                          <i class="bi bi-diagram-2 me-1"></i> View AI Agent Reasoning & Business Findings
+                        </button>
+                      </h2>
+                      <div id="reasoningCollapse" class="accordion-collapse collapse" data-bs-parent="#reasoningAccordion">
+                        <div class="accordion-body px-0 py-2">
+                          <div class="row g-2">
+                            <div class="col-md-6">
+                              <div class="p-2 bg-slate-900 rounded-3 border border-slate-800">
+                                <span class="text-xs text-cyan font-bold font-outfit text-uppercase d-block mb-1">Agent Steps</span>
+                                <ul id="reasoning-steps-list" class="list-unstyled text-xs text-secondary mb-0 ps-1 font-mono">
+                                  <li><i class="bi bi-check2 text-cyan me-1"></i>Awaiting query input.</li>
+                                </ul>
+                              </div>
+                            </div>
+                            <div class="col-md-6">
+                              <div class="p-2 bg-slate-900 rounded-3 border border-slate-800">
+                                <span class="text-xs text-warning font-bold font-outfit text-uppercase d-block mb-1">Business Findings</span>
+                                <ul id="business-insights-list" class="list-unstyled text-xs text-secondary mb-0 ps-1">
+                                  <li><i class="bi bi-lightbulb-fill text-warning me-1"></i>Awaiting execution results.</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+            <!-- ---------------------------------------------------- -->
+            <!-- RIGHT COLUMN: DATA VISUALIZATION PANEL -->
+            <!-- ---------------------------------------------------- -->
+            <div class="col-lg-6">
+              <div class="dashboard-card">
+                <!-- Header -->
+                <div class="dashboard-card-header">
+                  <span class="dashboard-card-title">
+                    <i class="bi bi-bar-chart-fill text-cyan"></i> Data Visualization
+                  </span>
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="text-xs text-muted">Type:</span>
+                    <select id="chart-type-select" class="form-select form-select-sm bg-slate-900 text-white border-secondary py-0 text-xs font-mono" style="width: 130px;">
+                      <option value="bar">Bar Chart</option>
+                      <option value="line">Line Chart</option>
+                      <option value="doughnut">Doughnut</option>
+                      <option value="pie">Pie Chart</option>
+                    </select>
+                    <button id="btn-download-chart" class="btn btn-editor-action" title="Download Chart Image">
+                      <i class="bi bi-download"></i>
+                    </button>
+                    <button id="btn-expand-chart" class="btn btn-editor-action" title="Toggle Fullscreen">
+                      <i class="bi bi-arrows-fullscreen"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Body / Canvas Container -->
+                <div class="dashboard-card-body d-flex flex-column">
+                  <div id="chart-container" class="flex-grow-1 position-relative" style="min-height: 250px;">
+                    <canvas id="analytics-chart"></canvas>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div><!-- /row g-3 -->
+
+          <!-- ====================================================== -->
+          <!-- FULL-WIDTH QUERY RESULTS TABLE -->
+          <!-- ====================================================== -->
+          <div class="dashboard-card">
+            <!-- Header -->
+            <div class="dashboard-card-header">
+              <span class="dashboard-card-title">
+                <i class="bi bi-grid-3x3-gap-fill text-cyan"></i> Query Results 
+                <span id="results-count-text" class="text-muted fw-normal text-xs ms-1"></span>
+              </span>
+              <div class="d-flex align-items-center gap-2">
+                <div class="table-search-box">
+                  <i class="bi bi-search text-muted text-xs"></i>
+                  <input type="text" id="table-search-input" placeholder="Search rows...">
+                </div>
+                <button id="btn-export-csv" class="btn btn-editor-action" title="Export as CSV">
+                  <i class="bi bi-file-earmark-spreadsheet me-1 text-success-green"></i> CSV
+                </button>
+                <button id="btn-print-report" class="btn btn-editor-action" title="Print Results">
+                  <i class="bi bi-printer me-1 text-blue"></i> Print
+                </button>
+              </div>
+            </div>
+
+            <!-- Body / Table -->
+            <div class="dashboard-card-body p-0">
+              <div class="table-responsive-clean" style="max-height: 360px; overflow-y: auto;">
+                <table class="table custom-table mb-0">
+                  <thead id="results-table-head"></thead>
+                  <tbody id="results-table-body">
+                    <tr>
+                      <td class="text-center text-muted py-4">No records to display yet. Run a query above to see live results.</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /tab-query -->
+
+        <!-- ======================================================== -->
+        <!-- TAB 2: SCHEMA & ER DIAGRAM VISUALIZER (FULL VIEW) -->
+        <!-- ======================================================== -->
+        <div class="tab-pane fade" id="tab-schema" role="tabpanel">
+
+          <!-- Top Schema Banner -->
+          <div class="dashboard-card p-3 mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+              <div>
+                <h5 class="text-white font-outfit mb-1">
+                  <i class="bi bi-diagram-3-fill text-cyan me-2"></i> Database Schema & Entity-Relationship Architecture
+                </h5>
+                <p class="text-xs text-muted mb-0">
+                  Interactive relationship visualization, foreign-key mappings, and schema definitions for the active database.
+                </p>
+              </div>
+              <span id="active-db-badge" class="badge bg-blue-900/50 text-cyan border border-cyan-500/40 px-3 py-2 font-mono">
+                Sample Enterprise DB (SQLite WASM)
+              </span>
+            </div>
+          </div>
+
+          <!-- Section A: Interactive Canvas ER Diagram -->
+          <div class="dashboard-card p-3 mb-3">
+            <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+              <span class="dashboard-card-title">
+                <i class="bi bi-bounding-box-circles text-cyan me-1"></i> Interactive Visual ER Diagram
+              </span>
+              <div class="d-flex flex-wrap align-items-center gap-2">
+                <div class="table-search-box">
+                  <i class="bi bi-search text-muted text-xs"></i>
+                  <input type="text" id="er-search-input" placeholder="Search table in ER...">
+                </div>
+                <div class="btn-group btn-group-sm" role="group">
+                  <button id="btn-er-fit-view" class="btn btn-editor-action" title="Fit Entire Diagram to Screen">
+                    <i class="bi bi-aspect-ratio me-1"></i> Fit
+                  </button>
+                  <button id="btn-er-zoom-in" class="btn btn-editor-action" title="Zoom In">
+                    <i class="bi bi-zoom-in"></i>
+                  </button>
+                  <button id="btn-er-zoom-out" class="btn btn-editor-action" title="Zoom Out">
+                    <i class="bi bi-zoom-out"></i>
+                  </button>
+                  <button id="btn-er-reset-zoom" class="btn btn-editor-action" title="Reset View (100%)">
+                    100%
+                  </button>
+                  <button id="btn-er-auto-layout" class="btn btn-editor-action" title="Auto-Rearrange Layout">
+                    <i class="bi bi-shuffle me-1"></i> Rearrange
+                  </button>
+                  <button id="btn-er-fullscreen" class="btn btn-editor-action" title="Toggle Diagram Fullscreen">
+                    <i class="bi bi-arrows-fullscreen"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="er-status-banner" class="d-flex flex-wrap align-items-center justify-content-between mb-2 px-3 py-2 bg-slate-900 rounded-3 border border-slate-800 text-xs text-secondary gap-2">
+              <div class="d-flex align-items-center">
+                <i class="bi bi-info-circle text-cyan me-2"></i>
+                <span id="er-status-instructions">Click table to isolate • Drag nodes to reposition • Scroll to zoom • Drag canvas to pan • Double-click node to preview</span>
+              </div>
+            </div>
+            <div class="er-canvas-container position-relative" id="er-canvas-wrapper" style="overflow: hidden; cursor: grab;">
+              <canvas id="er-diagram-canvas"></canvas>
+            </div>
+          </div>
+
+          <!-- Section B: Whole Database Relational Mapping Matrix -->
+          <div class="dashboard-card p-3 mb-3">
+            <h6 class="text-white font-outfit mb-3">
+              <i class="bi bi-link-45deg text-success-green me-1"></i> Whole Database Foreign Key Mappings & Cardinality
+            </h6>
+            <div id="relationship-matrix-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Section C: Tabular Schema Explorer (Table Cards) -->
+          <div class="dashboard-card p-3">
+            <h6 class="text-white font-outfit mb-3">
+              <i class="bi bi-table text-blue me-1"></i> Tabular Schema Inspector (Columns, Data Types & Sample Preview)
+            </h6>
+            <div class="row g-3" id="tabular-schema-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+        </div><!-- /tab-schema -->
+
+        <!-- ======================================================== -->
+        <!-- TAB 3: QUERY HISTORY (AUDIT LOG) -->
+        <!-- ======================================================== -->
+        <div class="tab-pane fade" id="tab-history" role="tabpanel">
+          <div class="dashboard-card p-3 mb-3">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h5 class="text-white font-outfit mb-1"><i class="bi bi-clock-history text-success-green me-2"></i>Query Audit Log</h5>
+                <p class="text-xs text-muted mb-0">Record of executed natural language queries and generated SQL statements.</p>
+              </div>
+              <button class="btn btn-sm btn-outline-danger" onclick="localStorage.removeItem('sqlgenx_history'); window.app.history = []; window.app.renderHistory();">
+                <i class="bi bi-trash3 me-1"></i> Clear History
+              </button>
+            </div>
+          </div>
+          <div id="history-items-container">
+            <!-- Populated from localStorage -->
+          </div>
+        </div><!-- /tab-history -->
+
+        <!-- ======================================================== -->
+        <!-- TAB 4: SPIDER BENCHMARK GUIDE -->
+        <!-- ======================================================== -->
+        <div class="tab-pane fade" id="tab-benchmark" role="tabpanel">
+          <div class="dashboard-card p-4">
+            <div class="d-flex align-items-center gap-3 mb-4">
+              <div class="bg-primary/20 p-3 rounded-3 text-cyan fs-3">
+                <i class="bi bi-award-fill"></i>
+              </div>
+              <div>
+                <h4 class="text-white font-outfit mb-1">Yale Spider Benchmark for NL-to-SQL Training & Evaluation</h4>
+                <p class="text-muted text-sm mb-0">The industry-standard dataset used by leading research labs worldwide to train and benchmark AI text-to-SQL agents.</p>
+              </div>
+            </div>
+
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="p-3 bg-slate-900 rounded-3 border border-slate-800 h-100">
+                  <h6 class="text-white font-outfit"><i class="bi bi-check2-circle text-success-green me-2"></i>Spider Benchmark Complexity Tiers</h6>
+                  <p class="text-xs text-muted">Spider categorizes SQL tasks into four progressive difficulty levels:</p>
+                  <ul class="text-xs text-secondary ps-3">
+                    <li class="mb-2"><strong class="text-success-green">Easy:</strong> Single table filters, simple ordering, basic limits.</li>
+                    <li class="mb-2"><strong class="text-cyan">Medium:</strong> 2-table JOINs, standard aggregations (SUM, AVG, COUNT), GROUP BY.</li>
+                    <li class="mb-2"><strong class="text-warning">Hard:</strong> 3+ table JOINs, GROUP BY with HAVING, nested subqueries, date transforms.</li>
+                    <li class="mb-2"><strong class="text-danger">Extra Hard:</strong> Correlated subqueries, self-joins, set operations (INTERSECT, EXCEPT, UNION).</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="p-3 bg-slate-900 rounded-3 border border-slate-800 h-100">
+                  <h6 class="text-white font-outfit"><i class="bi bi-lightning-charge text-cyan me-2"></i>SQLGenX Dual Database Architecture</h6>
+                  <p class="text-xs text-muted">How SQLGenX connects to both production and sandbox databases:</p>
+                  <ul class="text-xs text-secondary ps-3">
+                    <li class="mb-2"><strong class="text-white">Live MySQL Connection:</strong> Connect directly to your local or cloud MySQL database to generate and execute queries on real data.</li>
+                    <li class="mb-2"><strong class="text-white">Sample Enterprise Sandbox:</strong> Zero-setup in-browser SQLite database (1,900+ rows) ready whenever MySQL is offline or disconnected.</li>
+                    <li class="mb-2"><strong class="text-white">Interactive ER Visualizer:</strong> Visual diagram of tables, foreign-key relationships, and column schemas.</li>
+                    <li class="mb-2"><strong class="text-white">Read-Only Guardrail:</strong> Blocks all mutating DDL/DML operations (DROP, DELETE, UPDATE) across all databases.</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="mt-4 p-3 bg-slate-900/60 rounded-3 border border-slate-800">
+              <h6 class="text-white font-outfit mb-2"><i class="bi bi-book text-cyan me-2"></i>Spider Dataset Training Guide</h6>
+              <p class="text-xs text-muted mb-0">For full technical specifications and benchmark schema details, see the <a href="SPIDER_DATASET.md" class="text-cyan text-decoration-none" target="_blank">SPIDER_DATASET.md</a> guide.</p>
+            </div>
+          </div>
+        </div><!-- /tab-benchmark -->
+
+      </div><!-- /tab-content -->
+    </main>
+
+  </div><!-- /app-layout -->
+
+  <!-- ============================================================== -->
+  <!-- MODAL 1: REALTIME MYSQL CONNECTION MODAL -->
+  <!-- ============================================================== -->
+  <div class="modal fade" id="mysqlConnectModal" tabindex="-1" aria-labelledby="mysqlConnectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-slate-950 border border-slate-800 text-white">
+        <div class="modal-header border-slate-800">
+          <h6 class="modal-title font-outfit fw-bold" id="mysqlConnectModalLabel">
+            <i class="bi bi-hdd-network-fill text-cyan me-2"></i> Connect Realtime MySQL Database
+          </h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="text-xs text-muted mb-3">Connect to a local or remote MySQL instance to introspect live schemas and run read-only queries.</p>
+
+          <div class="row g-2 mb-3">
+            <div class="col-8">
+              <label class="form-label text-xs font-semibold text-secondary">Host / IP:</label>
+              <input type="text" id="mysql-host" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" value="localhost">
+            </div>
+            <div class="col-4">
+              <label class="form-label text-xs font-semibold text-secondary">Port:</label>
+              <input type="number" id="mysql-port" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" value="3306">
+            </div>
+          </div>
+
+          <div class="row g-2 mb-3">
+            <div class="col-6">
+              <label class="form-label text-xs font-semibold text-secondary">Username:</label>
+              <input type="text" id="mysql-user" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" value="root">
+            </div>
+            <div class="col-6">
+              <label class="form-label text-xs font-semibold text-secondary">Password:</label>
+              <input type="password" id="mysql-password" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" placeholder="••••••••">
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-xs font-semibold text-secondary">Database Name:</label>
+            <input type="text" id="mysql-database" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" placeholder="e.g. university_db, store_db">
+          </div>
+        </div>
+        <div class="modal-footer border-slate-800 d-flex justify-content-between">
+          <button type="button" id="btn-test-mysql" class="btn btn-sm btn-outline-info text-cyan border-cyan-500/40">
+            <i class="bi bi-broadcast me-1"></i> Test Connection
+          </button>
+          <div class="d-flex gap-2">
+            <button type="button" id="btn-disconnect-mysql" class="btn btn-sm btn-outline-danger" data-bs-dismiss="modal">
+              Disconnect
+            </button>
+            <button type="button" id="btn-connect-mysql" class="btn btn-sm btn-primary font-semibold">
+              <i class="bi bi-plug-fill me-1"></i> Connect
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL 2: TABLE SAMPLE DATA PREVIEW MODAL -->
+  <!-- ============================================================== -->
+  <div class="modal fade" id="tablePreviewModal" tabindex="-1" aria-labelledby="tablePreviewModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content bg-slate-950 border border-slate-800 text-white">
+        <div class="modal-header border-slate-800">
+          <h6 class="modal-title font-outfit fw-bold" id="tablePreviewModalTitle">
+            <i class="bi bi-table text-cyan me-2"></i> Table Preview
+          </h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-0">
+          <div class="table-responsive" style="max-height: 400px;">
+            <table class="table custom-table mb-0">
+              <thead id="preview-table-head"></thead>
+              <tbody id="preview-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        <div class="modal-footer border-slate-800">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================== -->
+  <!-- MODAL 3: AI PROVIDER SETTINGS MODAL -->
+  <!-- ============================================================== -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content bg-slate-950 border border-slate-800 text-white">
+        <div class="modal-header border-slate-800">
+          <h6 class="modal-title font-outfit fw-bold" id="settingsModalLabel">
+            <i class="bi bi-sliders text-cyan me-2"></i> AI Provider & Model Configuration
+          </h6>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label text-xs font-semibold text-secondary">Active AI Provider:</label>
+            <select id="settings-provider-select" class="form-select bg-slate-900 text-white border-secondary text-sm font-sans">
+              <option value="groq">Groq Cloud (Fastest Inference)</option>
+              <option value="gemini">Google Gemini</option>
+              <option value="openai">OpenAI (GPT-4o)</option>
+              <option value="offline">Offline Semantic Matcher</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-xs font-semibold text-secondary">Groq API Key:</label>
+            <input type="password" id="settings-groq-key" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" 
+              placeholder="gsk_...">
+            <div class="form-text text-xs text-muted">Stored safely in browser localStorage.</div>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-xs font-semibold text-secondary">Groq Model:</label>
+            <input type="text" id="settings-groq-model" class="form-control bg-slate-900 text-white border-secondary text-sm font-mono" 
+              value="openai/gpt-oss-120b">
+          </div>
+        </div>
+        <div class="modal-footer border-slate-800">
+          <button type="button" class="btn btn-sm btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" id="btn-save-settings" class="btn btn-sm btn-primary font-semibold" data-bs-dismiss="modal">Save Changes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

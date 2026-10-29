@@ -1,194 +1,134 @@
-# SQLGenX: Agentic AI SQL Generation & Query Intelligence Platform
+# SQLGenX: Agentic AI SQL Analytics & Interactive ER Intelligence
 
-![SQLGenX Header](https://img.shields.io/badge/SQLGenX-Agentic%20AI-0284c7?style=for-the-badge)
-![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)
-![React](https://img.shields.io/badge/React_18-20232A?style=for-the-badge&logo=react)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css)
-![Scikit-Learn](https://img.shields.io/badge/Scikit_Learn-F7931E?style=for-the-badge&logo=scikit-learn)
-![Groq](https://img.shields.io/badge/Groq_LLaMA_3.3-F05032?style=for-the-badge)
+![SQLGenX System Architecture](assets/system_architecture_diagram.png)
 
-**SQLGenX** is an enterprise-grade **Agentic AI SQL Generation & Query Intelligence Platform** that converts natural-language questions into validated, safe, performant, and executable SQL queries. It features a visible multi-agent workflow, semantic schema RAG, machine learning risk classification, cost analysis with query execution plans, automated charts, and an empirical MLOps evaluation studio.
+[![Platform](https://img.shields.io/badge/Platform-SQLGenX%20v2.0-00D9FF?style=for-the-badge)](SYSTEM_ARCHITECTURE.md)
+[![Stack](https://img.shields.io/badge/Stack-HTML5%20%7C%20CSS3%20%7C%20Vanilla%20JS-1677FF?style=for-the-badge)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![MySQL](https://img.shields.io/badge/MySQL-Realtime%20Pool-10B981?style=for-the-badge&logo=mysql&logoColor=white)](server.js)
+[![SQLite WASM](https://img.shields.io/badge/SQLite-In--Browser%20WASM-003B57?style=for-the-badge&logo=sqlite)](https://sql.js.org/)
+[![Benchmark](https://img.shields.io/badge/Yale%20Spider-4%20Tiers-F59E0B?style=for-the-badge)](SPIDER_DATASET.md)
 
----
+**SQLGenX** is an enterprise-grade **Agentic AI SQL Generation, Data Analytics, and Entity-Relationship (ER) Intelligence Platform** built with **HTML5, CSS3, Vanilla ES6 JavaScript, LangChain JS, and Bootstrap 5.3**.
 
-## Key Highlights & Architectural Innovations
-
-1. **6-Stage Multi-Agent Architecture**:
-   - **Schema Intelligence Agent**: Inspects database metadata, identifies primary/foreign keys, extracts relationships, and retrieves relevant tables using vector embeddings.
-   - **SQL Generation Agent**: Translates natural language into structured relational SQL with dialect targeting (Groq LLaMA-3.3 70B, Gemini, OpenAI, or local semantic fallback).
-   - **SQL Validation Agent**: Validates AST structure, cross-checks column and table existence against the live DB schema, ensures JOIN consistency, and flags aggregation issues.
-   - **SQL Repair Agent**: Self-healing loop that catches syntax or schema errors and automatically repairs queries within a max retry threshold.
-   - **SQL Optimization Agent**: Uses `EXPLAIN` query plan cost analysis, replaces non-SARGable date functions with indexed ranges, prunes redundant joins, and benchmarks performance cost reduction.
-   - **Data Analyst Agent**: Grounded statistical analysis computing top contributors, percentages, anomalies, and dynamically choosing the optimal visualization chart (Bar, Line, Area, Pie, Scatter, KPI Card).
-
-2. **Real ML SQL Risk Classification**:
-   - Trained Scikit-Learn **Random Forest Classifier** extracting 12 structural/AST features (SELECT verbs, destructive keywords, wildcards, joins, subqueries, missing WHERE clauses, complexity score) categorizing queries into **LOW**, **MEDIUM**, or **HIGH** risk.
-   - Guardrail automatically blocks mutating operations (`DROP`, `DELETE`, `TRUNCATE`, `ALTER`, `UPDATE`, `INSERT`) in read-only mode.
-
-3. **Semantic Schema RAG Retrieval**:
-   - Indexes tables, columns, foreign keys, documentation, and verified query patterns into vector storage for targeted context retrieval.
-
-4. **1000+ Row Seeded E-Commerce Database**:
-   - Includes a built-in realistic demo database with `customers`, `categories`, `products`, `orders`, `order_items`, and `payments` across diverse cities and historical dates.
-
-5. **Empirical MLOps Evaluation Studio**:
-   - Evaluates benchmark queries across Exact Match, Execution Accuracy, Schema Linking Score, Repair Success Rate, and Latency distributions.
-   - Real side-by-side comparison across **LLM Only**, **LLM + RAG**, **LLM + RAG + Validator**, and **Full Agentic Pipeline**.
-
-6. **Interactive AI Copilot Workspace**:
-   - Real-time animated **Agent Workflow visualizer** with Server-Sent Events (SSE).
-   - **Monaco SQL Editor** with formatting, copy, download, explain, optimize, and manual run.
-   - Interactive **Result Table** with sorting, column search, and export to **CSV**, **JSON**, and **PDF Intelligence Report**.
-   - **Schema ER Explorer** with interactive table cards and foreign key relation maps.
-   - **Conversational Chat Mode** supporting multi-turn refinements (e.g., *"Now only show 2026"*).
+It converts natural language questions into accurate, validated SQL queries with dialect targeting (MySQL & SQLite), executes them with sub-millisecond latency, visualizes complete entity relationships in an **interactive canvas graph engine** with auto-anchored flow connectors, and renders dynamic analytics using **Chart.js**.
 
 ---
 
-## Technology Stack
+## 📚 Technical Documentation
 
-| Layer | Technologies |
-|---|---|
-| **Frontend** | React 18, TypeScript, Vite, Tailwind CSS, Lucide Icons, Framer Motion, Recharts, Monaco Editor (`@monaco-editor/react`) |
-| **Backend** | Python 3.10+, FastAPI, Pydantic v2, SQLAlchemy 2.0, SSE-Starlette, ReportLab, Sqlparse |
-| **Machine Learning** | Scikit-Learn (Random Forest), NumPy, Pandas, Joblib |
-| **Semantic RAG** | SentenceTransformers / TF-IDF Cosine Vector Store |
-| **AI LLM Routing** | Groq (LLaMA-3.3 70B Versatile), Google Gemini 1.5 Flash, OpenAI GPT-4o, Local Semantic Agent |
-| **Databases** | SQLite, PostgreSQL, MySQL (Read-Only Sandbox) |
-| **DevOps** | Docker, Docker Compose |
+- 🏛️ **[SYSTEM_ARCHITECTURE.md](SYSTEM_ARCHITECTURE.md)**: Full end-to-end system architecture, multi-agent sequence diagrams, dual database engine specifications, and ER canvas engine internals.
+- 🕷️ **[SPIDER_DATASET.md](SPIDER_DATASET.md)**: Yale University Spider text-to-SQL benchmark guide, schema breakdowns, and difficulty tier classification (*Easy*, *Medium*, *Hard*, *Extra Hard*).
 
 ---
 
-## Directory Structure
+## ✨ Key Platform Features
+
+### 1. Dual-Mode Database Engine
+- 🐬 **Realtime MySQL Connection Bridge**: Connect directly to your local or remote MySQL server (`host`, `port`, `user`, `password`, `database`). Introspects live production schemas and executes safe read-only analytical queries over an Express connection pool.
+- ⚡ **Sample Enterprise Database (Offline Sandbox)**: An in-browser SQLite database running on WebAssembly (`sql.js`) with 1,900+ seeded records across `customers`, `orders`, `order_items`, `products`, `categories`, and `payments`. Ready immediately out of the box with zero setup required.
+
+### 2. Interactive Canvas ER Visualizer Engine
+- 🕸️ **Pan & Zoom Navigation**: Smooth mouse wheel zooming (centered at mouse coordinates) and click-and-drag canvas panning with `grabbing` cursor.
+- 📐 **Edge-to-Edge Bezier Auto-Anchors**: Connectors anchor directly to card borders with directional arrowheads, preventing connector lines from cutting through card text.
+- ⚡ **Animated Marching Dash Flow**: Selecting a table activates animated marching dashes along related foreign key paths to visually demonstrate relationship flow (`PK ──► FK`).
+- 🔍 **Table Search in Diagram**: Real-time search filter that highlights matching tables and smoothly auto-centers the viewport on them.
+- 🎛️ **Interactive Toolbar**: Dedicated buttons for `Fit to Screen`, `Zoom In`, `Zoom Out`, `100% Reset`, `Auto-Rearrange`, and `Fullscreen`.
+- 👁️ **Double-Click Record Preview**: Double-clicking any table node on the canvas instantly opens the live table data preview modal (10 sample rows) directly from the diagram.
+- 📋 **Tabular Schema Inspector & Cardinality Matrix**: Tabular cards detailing all column data types, primary keys (`PK`), and foreign keys (`FK`), alongside a whole-database relationship matrix.
+
+### 3. Multi-Agent AI Query Copilot
+- 🤖 **LangChain AI Model Routing**: Connects to **Groq Cloud** (LLaMA 3.3, GPT-OSS 120B), **Google Gemini** (1.5 Flash), and **OpenAI** (GPT-4o).
+- 🔌 **Offline Semantic Fallback**: Intelligent rule-based engine providing instant offline SQL query generation without requiring an API key.
+- 🛡️ **Deterministic AST Safety Guardrail**: Client-side AST scanner that computes risk scores (**LOW**, **MEDIUM**, **HIGH**) and strictly blocks mutating operations (`DROP`, `DELETE`, `TRUNCATE`, `ALTER`, `CREATE`, `UPDATE`, `INSERT`).
+- 📊 **Automated Business Analyst**: Automatically determines the best Chart.js visualization type (Bar, Line, Doughnut, Pie) and applies heuristic currency formatting (`₹`) for financial columns while preserving raw formatting for academic marks, grades, and counts.
+
+### 4. Polished Enterprise Dashboard (Section 12 Design System)
+- Restrained dark enterprise palette: `#060B16` background, `#091226` sidebar, `#0D172A` cards, `#111E33` inputs, with `#00D9FF` cyan accents.
+- Responsive Offcanvas Drawer for tablets and mobile devices with zero horizontal page overflow.
+- 4 primary navigation items:
+  1. **AI Query Copilot**
+  2. **Schema & ER Visualizer**
+  3. **Query History**
+  4. **Spider Benchmark**
+
+### 5. Concrete Spider Benchmark Integration
+SQLGenX actively implements the Yale Spider benchmark across 3 layers:
+- **Sandbox Database (`js/database.js`)**: Built-in SQLite WASM database runs the 6-table Spider Store relational schema with 1,900+ real records.
+- **AI Prompt Grounding (`js/langchain-llm.js`)**: Introspects Spider foreign keys so the AI writes accurate multi-table `JOIN` queries.
+- **Interactive ER Graph (`js/er-visualizer.js`)**: Visualizes Spider entity relationships with animated marching dash flow and live record previews.
+- For a complete step-by-step query walkthrough and benchmark tiers, see **[SPIDER_DATASET.md](SPIDER_DATASET.md)**.
+
+---
+
+## 📂 Project Directory Structure
 
 ```text
 SQLGenX/
-├── backend/
-│   ├── app/
-│   │   ├── agents/
-│   │   │   ├── schema_agent.py      # Schema Intelligence & RAG Linker
-│   │   │   ├── sql_generator.py     # Multi-Provider SQL LLM Generator
-│   │   │   ├── validator.py         # AST, Schema & Safety Validator
-│   │   │   ├── repair_agent.py      # Self-Healing Auto-Repair Agent
-│   │   │   ├── optimizer.py         # EXPLAIN Query Plan Cost Optimizer
-│   │   │   ├── analyst.py           # Grounded Insights & Chart Selector
-│   │   │   └── orchestrator.py      # SSE Streaming Pipeline Coordinator
-│   │   ├── api/
-│   │   │   ├── database.py          # Connect, Test, Seed Demo DB
-│   │   │   ├── query.py             # Stream, Execute, Validate, Optimize
-│   │   │   ├── schema.py            # ER Schema, DDL & Vector Search
-│   │   │   ├── analytics.py         # Insights & PDF/CSV Report Export
-│   │   │   ├── history.py           # Query History Storage
-│   │   │   ├── experiments.py       # MLOps Benchmarks & Comparisons
-│   │   │   └── health.py            # Health & Provider Status
-│   │   ├── database/
-│   │   │   ├── connection.py        # Database Connection Pool
-│   │   │   ├── introspection.py     # Schema Inspector & Metadata Extractor
-│   │   │   ├── executor.py          # Read-Only Execution Sandbox
-│   │   │   └── seed_data.py         # 1000+ Row E-Commerce DB Generator
-│   │   ├── ml/
-│   │   │   ├── features.py          # SQL AST & Structural Feature Extraction
-│   │   │   ├── risk_model.py        # Random Forest Model Wrapper
-│   │   │   └── train.py             # Model Training Pipeline & Dataset
-│   │   ├── rag/
-│   │   │   ├── embeddings.py        # Vector Embedding Generator
-│   │   │   ├── vector_store.py      # In-Memory Cosine Vector Store
-│   │   │   ├── indexer.py           # Schema Vector Indexer
-│   │   │   └── retriever.py         # Semantic Similarity Context Retriever
-│   │   ├── evaluation/
-│   │   │   ├── benchmark.py         # Standard Benchmark Dataset
-│   │   │   └── metrics.py           # Exact Match, Execution & Latency Evaluator
-│   │   ├── config.py                # Environment Configuration
-│   │   └── main.py                  # FastAPI Application Entrypoint
-│   ├── requirements.txt
-│   └── test_backend.py              # Backend Verification Test Suite
+├── index.html                   # Master single-page application entrypoint
+├── server.js                    # Node.js Express 5 API bridge for MySQL & static file serving
+├── package.json                 # Dependency manifest (express, cors, mysql2)
+├── requirements.txt             # System requirements & runtime prerequisites manifest
+├── SPIDER_DATASET.md            # Yale Spider benchmark technical documentation
+├── SYSTEM_ARCHITECTURE.md       # Comprehensive system architecture specification
+├── README.md                    # Project documentation & quick start guide
 │
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── Navbar.tsx           # Header with Model & DB Status
-│   │   │   ├── Sidebar.tsx          # Navigation Bar
-│   │   │   ├── AgentWorkflow.tsx    # Live Real-Time Agent Execution Graph
-│   │   │   ├── SqlEditor.tsx        # Monaco SQL Editor with Controls
-│   │   │   ├── ResultTable.tsx      # Data Table with Sort, Filter & PDF Export
-│   │   │   ├── ChartRenderer.tsx    # Dynamic Recharts Engine (Bar/Line/Pie/etc)
-│   │   │   ├── InsightPanel.tsx     # Grounded AI Insights & Query Steps
-│   │   │   ├── RiskBadge.tsx        # ML Risk Indicator with Explanations
-│   │   │   ├── OptimizationPanel.tsx# Cost & SQL Diff Comparison
-│   │   │   └── ConversationChat.tsx # Multi-Turn Follow-Up Query Refinement
-│   │   ├── pages/
-│   │   │   ├── Landing.tsx          # Animated Overview & Quick Sandbox
-│   │   │   ├── QueryWorkspace.tsx   # AI Analyst Flagship Workspace
-│   │   │   ├── SchemaExplorer.tsx   # Visual ER Schema & RAG Search
-│   │   │   ├── Databases.tsx        # Multi-DB Connection & 1-Click Seeder
-│   │   │   ├── QueryHistory.tsx     # Query History & Audit Trail
-│   │   │   ├── MLOps.tsx            # MLOps Studio & Benchmark Runner
-│   │   │   └── Settings.tsx         # API Keys & Guardrail Thresholds
-│   │   ├── services/api.ts          # Typed REST & SSE API Client
-│   │   ├── types/index.ts           # TypeScript Domain Definitions
-│   │   ├── App.tsx                  # Root Application Layout
-│   │   └── main.tsx                 # DOM Entrypoint
-│   ├── package.json
-│   ├── vite.config.ts
-│   └── tailwind.config.js
+├── assets/
+│   └── system_architecture_diagram.png # Full-system architecture diagram
 │
-├── Dockerfile
-├── docker-compose.yml
-└── .env.example
+├── css/
+│   └── style.css                # Section 12 design system, dark palette, canvas & responsive rules
+│
+└── js/
+    ├── app.js                   # Application coordinator, event dispatcher & history state
+    ├── database.js              # Dual database engine (MySQL connection pool & SQLite WASM sandbox)
+    ├── er-visualizer.js         # Interactive Canvas ER graph, pan/zoom, auto-anchor & flow engine
+    ├── langchain-llm.js         # LangChain AI agent, Groq/Gemini/OpenAI routing & offline fallback
+    ├── validator.js             # Deterministic AST read-only guardrail & risk scoring engine
+    └── analyst.js               # Data analyst agent & dynamic Chart.js chart generator
 ```
 
 ---
 
-## Getting Started
+## ⚙️ System Requirements & Prerequisites
 
-### 1. Prerequisites
-- Python 3.10+
-- Node.js 18+ and npm
+All runtime requirements are defined in **[requirements.txt](requirements.txt)**:
+- **Node.js**: `v18.0.0` or higher (`v20+` or `v22+ LTS` recommended)
+- **NPM**: `v9.0.0+`
+- **Modern Browser**: Google Chrome 89+, Mozilla Firefox 88+, Microsoft Edge 89+, or Safari 15+ (with WebAssembly & ES6 Module support)
+- **MySQL (Optional)**: MySQL 5.7/8.0/8.4 or MariaDB 10.4+ (required only for live MySQL connection mode)
 
-### 2. Backend Setup
+---
+
+## 🚀 Quick Start Guide
+
+### 1. Install Dependencies
 ```bash
-cd backend
-pip install -r requirements.txt
-python test_backend.py
-python app/main.py
-```
-The backend API and Swagger docs will be available at `http://localhost:8000/docs`.
-
-### 3. Frontend Setup
-```bash
-cd frontend
 npm install
-npm run dev
 ```
-Open `http://localhost:5173` in your browser.
 
----
-
-## Running with Docker Compose
-
+### 2. Start the Server
 ```bash
-docker compose up --build
+npm start
 ```
-- Frontend: `http://localhost:5173`
-- Backend API: `http://localhost:8000`
-- PostgreSQL: `localhost:5432`
+Open **`http://localhost:3000`** in your browser.
+
+> [!TIP]
+> You can also open `index.html` directly using VS Code Live Server (port 5500) or deploy it to GitHub Pages. All client-side SQLite WASM features, AI Copilot, and the ER Visualizer run 100% in-browser with zero setup.
 
 ---
 
-## Example Queries to Try
+## 🐬 Connecting to a Live MySQL Database
 
-- `"Show the top 5 customers by total spending"`
-- `"Which city generated the highest revenue?"`
-- `"Show monthly revenue for 2026"`
-- `"What are the top 10 products by revenue?"`
-- `"Find customers who haven't purchased in the last 90 days"`
-- `"Which category has the highest average order value?"`
-- Follow-up query: `"Now filter only for orders above $500"`
+1. Click the database selector pill or the connection badge in the top navigation bar.
+2. Enter your MySQL connection credentials:
+   - **Host**: `localhost` (or remote MySQL server IP / cloud hostname)
+   - **Port**: `3306`
+   - **Username**: `root` (or your database user)
+   - **Password**: your MySQL password
+   - **Database Name**: your target database name
+3. Click **"Test Connection"** to verify connectivity.
+4. Click **"Connect"**.
+5. The UI will instantly switch to live MySQL mode, introspect all tables, render the visual ER diagram, and allow you to ask natural language questions directly against your live database!
 
 ---
 
-## Security & Read-Only Protection
-
-SQLGenX enforces strict read-only execution:
-- Modifying SQL commands (`DROP`, `DELETE`, `TRUNCATE`, `ALTER`, `CREATE`, `UPDATE`, `INSERT`, `GRANT`, `REVOKE`) are blocked before hitting the database engine.
-- Machine Learning Risk Classifier assigns a confidence score to each query. High-risk or destructive patterns trigger a security block.
-- Row limits (default 500) and query timeouts (default 15s) protect against resource exhaustion.
